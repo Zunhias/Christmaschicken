@@ -53,7 +53,7 @@ void set_motor(int speed, bool reverse)
   analogWrite (motorEnablePin, speed);
   digitalWrite(directionPin1, !reverse);
   digitalWrite(directionPin2, reverse);
-  motor_is_running = ( speed == 0 );
+  motor_is_running = ( speed != 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
