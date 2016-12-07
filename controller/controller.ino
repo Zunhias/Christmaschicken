@@ -1,51 +1,100 @@
-/*
-  Initial  controlling environment from:
-  
-  Arduino Starter Kit example
- Project 9  - Motorized Pinwheel
 
- This sketch is written to accompany Project 9 in the
- Arduino Starter Kit
+//----------------------------------------------------------------------------------------------------------------------
+// The amazing Chickenshack controller
+//----------------------------------------------------------------------------------------------------------------------
 
- Parts required:
- 10 kilohm resistor
- pushbutton
- motor
- 9V battery
- IRF520 MOSFET
- 1N4007 diode
+//----------------------------------------------------------------------------------------------------------------------
+// pins
 
- Created 13 September 2012
- by Scott Fitzgerald
+const int E1Pin = 4;           // id of the digital switch pin E1
+const int E2Pin = 3;           // id of the digital switch pin E2
+const int motorEnablePin =  0; // id of the digital enable motor pin
+const int directionPin1 = 1;   // id of the digital directionPin1
+const int directionPin2 = 2;   // id of the digital directionPin2
+const int lightSensorPin = 5;  // id of the analog light sensor pin
 
- http://www.arduino.cc/starterKit
+//----------------------------------------------------------------------------------------------------------------------
+// constants
 
- This example code is part of the public domain
- */
+const int sun_is_up_threshold  = 40;      // threshold for light sensor on which we consider the sun to be shining
+const int max_sleep_time = 1000*60*60*10; // 1000 millisecs * 60 sec * 60 min * 10h
+const int max_awake_time = 1000*60*60*18; // 1000 millisecs * 60 sec * 60 min * 18h
+const int motor_speed = 1000000; // guillotine style speed!!!
 
-// named constants for the switch and motor pins
-const int switchPin = 2; // the number of the switch pin
-const int motorPin =  9; // the number of the motor pin
+//----------------------------------------------------------------------------------------------------------------------
+// variables
 
-int switchState = 0;  // variable for reading the switch's status
+// \todo average some time values so cars/streetlights do not open the chicken shack for intruders
+int light_values[300];          //  light values stored for every second over 5 minutes
+int smoothed_light_value = 0;   // the current smoothed light sensor value
+bool motor_is_running = false;
+// \todo for chicken safety count 'locked in' / 'free wildlife' times
+int current_sleep_time = 0;
+int current_awake_time = 0;
 
-void setup() {
-  // initialize the motor pin as an output:
-  pinMode(motorPin, OUTPUT);
-  // initialize the switch pin as an input:
-  pinMode(switchPin, INPUT);
+//----------------------------------------------------------------------------------------------------------------------
+
+bool time_to_get_up( int light_value, int current_sleep_time = 0)
+{
+  return (light_value > sun_is_up_threshold) || (current_sleep_time > max_sleep_time);
 }
 
-void loop() {
-  // read the state of the switch value:
-  switchState = digitalRead(switchPin);
+//----------------------------------------------------------------------------------------------------------------------
 
-  // check if the switch is pressed.
-  if (switchState == HIGH) {
-    // turn motor on:
-    digitalWrite(motorPin, HIGH);
-  } else {
-    // turn motor off:
-    digitalWrite(motorPin, LOW);
+bool time_to_sleep(int light_value, int current_awake_time = 0)
+{
+  return (light_value <= sun_is_up_threshold) || (current_awake_time > max_awake_time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void set_motor(int speed, bool reverse)
+{
+  analogWrite (motorEnablePin, speed);
+  digitalWrite(directionPin1, !reverse);
+  digitalWrite(directionPin2, reverse);
+  motor_is_running = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void setup()
+{
+  // initialize the motor enable pin and the direction pins as outputs:
+  pinMode(motorEnablePin, OUTPUT);
+  pinMode(directionPin1, OUTPUT);
+  pinMode(directionPin2, OUTPUT);
+
+  // initialize the switch pin as an input:
+  pinMode(E1Pin, INPUT);
+  pinMode(E2Pin, INPUT);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void loop()
+{
+  // read the state of the switch value:
+  const bool door_is_up   = digitalRead(E1Pin) == HIGH;
+  const bool door_is_down = digitalRead(E2Pin) == HIGH;
+
+  // turn off the motor when any of the up/down switches are triggered
+  // \todo probably we have to wait a little bit for the switches to change after activating the motor
+  if( motor_is_running && (door_is_up || door_is_down) ) // && (time_since_motor_started > motor_start_time_threshold)
+  {
+    set_motor(0, false);
+  }
+
+  // \todo smoothing of the light values
+  const int smoothed_light_value = analogRead(lightSensorPin);
+
+  if (door_is_up && time_to_sleep(smoothed_light_value))
+  {
+    set_motor(motor_speed, false);
+  }
+
+  if (door_is_down && time_to_get_up(smoothed_light_value))
+  {
+    set_motor(motor_speed, true);
   }
 }
