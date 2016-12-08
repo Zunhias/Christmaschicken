@@ -21,6 +21,8 @@ const int lightSensorPin = 5;  // id of the analog light sensor pin
 //----------------------------------------------------------------------------------------------------------------------
 // constants
 
+// \todo separate daytime/nighttime thresholds for precise opening/closing times
+//       delay closing time 30 minutes after light is off.
 const int sun_is_up_threshold  = 40;      // threshold for light sensor on which we consider the sun to be shining
 const int max_sleep_time = 1000*60*60*10; // 1000 millisecs * 60 sec * 60 min * 10h
 const int max_awake_time = 1000*60*60*18; // 1000 millisecs * 60 sec * 60 min * 18h
@@ -86,11 +88,12 @@ void setup()
 //----------------------------------------------------------------------------------------------------------------------
 
 // this function averages the incoming light over all data points.
+
 double calculate_light_value()
 {
   // \todo the interval of measurement should not be 1 milliseconds. Also think about what happens when 'delay' is called
   const unsigned long current_time = millis();
-  const int pos = current_time%light_values;
+  const int pos = current_time%nr_of_light_values;
   int old_increment = light_values[pos]/nr_of_light_values;
   light_values[pos] = analogRead(lightSensorPin);
   int new_increment = light_values[pos]/nr_of_light_values;
