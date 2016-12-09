@@ -16,7 +16,7 @@ const int E2Pin = 3;           // id of the digital switch pin E2 - lower sensor
 const int motorEnablePin = 7;  // id of the digital enable motor pin
 const int directionPin1 = 5;   // id of the digital directionPin1
 const int directionPin2 = 6;   // id of the digital directionPin2
-const int lightSensorPin = A0;  // id of the analog light sensor pin; for now done with a potentiometer
+const int lightSensorPin = A0; // id of the analog light sensor pin; for now done with a potentiometer
 
 //----------------------------------------------------------------------------------------------------------------------
 // constants
@@ -61,7 +61,6 @@ void set_motor(int speed, bool reverse = false)
   digitalWrite(directionPin1, !reverse);
   digitalWrite(directionPin2, reverse);
   motor_is_running = ( speed != 0 );
-  delay(200); // wait 200 ms so the switches connected to E1/E2 pins are changed in the real world accordingly
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +69,7 @@ void setup()
 {
   // initialize serial print for analysis
   Serial.begin(9600);
-  
+
   // initialize the motor enable pin and the direction pins as outputs:
   pinMode(motorEnablePin, OUTPUT);
   pinMode(directionPin1, OUTPUT);
@@ -114,9 +113,8 @@ void loop()
   if ( motor_is_running && (door_is_up || door_is_down) )
   {
     set_motor(0);
-    motor_is_running = false; // should fix the issue of 08.12.2016 (FZ)
   }
-  
+
   Serial.print("Door is up: ");
   Serial.print(door_is_up);
 
@@ -125,7 +123,7 @@ void loop()
 
   Serial.print("Motor is running: ");
   Serial.println(motor_is_running);
-  
+
   // do nothing as long as the motor is running
   if (!motor_is_running)
   {
@@ -138,11 +136,12 @@ void loop()
     {
       set_motor(motor_speed, false);
     }
-
+ 
     if (door_is_down && time_to_get_up(average_light_value))
     {
       set_motor(motor_speed, true);
     }
   }
- delay(500);
+
+ delay(500); // wait a bit so the real world accordingly
 }
