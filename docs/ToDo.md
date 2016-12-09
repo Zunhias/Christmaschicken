@@ -1,5 +1,8 @@
 # To Do List
 
+## Organizing
+- Bring the Matthias git by.
+
 ## Software
 - add manual up/down buttons and switch for automatic and manual operation
 - set realistic values for motor speed
