@@ -11,9 +11,7 @@
 - circuit board (for soldering)
 - DC-DC converter 12V (or 9V or 16V) -> 5V
 - alternatively/additionally power regulator
-- wires red, black, etc.
 - Atmel Atmega8/168/328 AVR microcontroller (to get rid of the Arduino Board)
-- up/down sensors for the hatch end-positions (@Zunari)
 
 ### Mechanical parts
 - hatch/door
