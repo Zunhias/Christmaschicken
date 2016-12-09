@@ -32,7 +32,6 @@ const int nr_of_light_values = 300;       // nr of data points for light sensor 
 //----------------------------------------------------------------------------------------------------------------------
 // variables
 
-// \todo average some time values so cars/streetlights do not open the chicken shack for intruders
 double light_values[nr_of_light_values];  // light values stored for every second over 5 minutes
 double average_light_value = 0.0;
 bool   motor_is_running = false;
