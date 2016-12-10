@@ -1,4 +1,4 @@
-
+#include "Arduino.h"
 //----------------------------------------------------------------------------------------------------------------------
 // The amazing Chickenshack controller
 //
@@ -11,11 +11,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 // pins
 
-const int E1Pin = 0;           // id of the digital switch pin E1 - upper sensor
-const int E2Pin = 1;           // id of the digital switch pin E2 - lower sensor
-const int manualControlPin = 2;
-const int manualDownPin = 3;
-const int manualUpPin = 4;
+const int E1Pin = 13;           // id of the digital switch pin E1 - upper sensor
+const int E2Pin = 12;           // id of the digital switch pin E2 - lower sensor
+const int manualControlPin = 9;
+const int manualDownPin = 10;
+const int manualUpPin = 11;
+
+// H-bridge L293D Pins
 const int directionPin1 = 5;   // id of the digital directionPin1
 const int directionPin2 = 6;   // id of the digital directionPin2
 const int motorEnablePin = 7;  // id of the digital enable motor pin
