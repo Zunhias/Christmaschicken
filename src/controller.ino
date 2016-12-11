@@ -39,7 +39,8 @@ const unsigned nr_of_light_values = 300;                   // nr of data points 
 double average_light_value = 0.0;
 unsigned pos = 0;                           // current position in light value array
 unsigned light_values[nr_of_light_values];  // light values stored for every second over 5 minutes
-bool   motor_is_running = false;
+bool motor_is_running = false;
+bool manual_control = false;
 // \todo for chicken safety count 'locked in' / 'free wildlife' times
 unsigned current_sleep_time = 0;
 unsigned current_awake_time = 0;
@@ -112,10 +113,10 @@ double calculate_light_value()
 
 void loop()
 {
-  // read the state of the manual control pins
-  bool manual_control = digitalRead(manualControlPin) == HIGH;
-  bool manual_up      = digitalRead(manualUpPin) == HIGH;
-  bool manual_down    = digitalRead(manualDownPin) == HIGH;
+  // read the state of the manual control pin
+  bool new_manual_control = digitalRead(manualControlPin) == HIGH;
+  bool manual_up          = digitalRead(manualUpPin) == HIGH;
+  bool manual_down        = digitalRead(manualDownPin) == HIGH;
   // read the state of the E1/E2 pins for the chicken shack door
   bool door_is_up   = digitalRead(E1Pin) == HIGH;
   bool door_is_down = digitalRead(E2Pin) == HIGH;
@@ -140,11 +141,15 @@ void loop()
   Serial.print(" Manual down: ");
   Serial.println(manual_down);
 
-  // turn off the motor when any of the E1/E2 switches are closed
-  if ( motor_is_running && (door_is_up || door_is_down) )
+  if (motor_is_running)
   {
-    set_motor(0);
+    // turn off the motor when any of the E1/E2 switches are closed or when manual_control has been changed
+    if (  door_is_up || door_is_down || (new_manual_control != manual_control))
+    {
+      set_motor(0);
+    }
   }
+  manual_control = new_manual_control;
 
   if (manual_control)
   {
