@@ -1,8 +1,7 @@
-#include "Bedtime.hpp"
-
+#include "Bedtime.h"
 //----------------------------------------------------------------------------------------------------------------------
 
-Bedtime::Bedtime()
+Bedtime::Bedtime() : m_last_timestamp(second())
 {
   //initialize light value array to complete darkness
   for (unsigned i = 0; i < m_nr_of_light_values; ++i)
@@ -21,14 +20,25 @@ double Bedtime::get_average_light_value()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// this function averages the incoming light over all data points.
-void Bedtime::calculate_light_value(unsigned new_light_value)
+// this function averages the incoming light over m_nr_of_light_values seconds.
+void Bedtime::add_light_value(unsigned new_light_value)
 {
-  m_pos = (m_pos+1) % m_nr_of_light_values;
-  double old_increment = (double)m_light_values[m_pos] / (double)m_nr_of_light_values;
-  m_light_values[m_pos] = new_light_value;
-  double new_increment = (double)m_light_values[m_pos] / (double)m_nr_of_light_values;
-  m_average_light_value = m_average_light_value - old_increment + new_increment;
+  if (second() != m_last_timestamp)
+  {
+    float light_value_for_second = m_cumulator_seconds/m_nr_values_for_second;
+    m_cumulator_seconds = 0;
+    m_nr_values_for_second = 0;
+    m_last_timestamp = second();
+
+    m_pos = (m_pos+1) % m_nr_of_light_values;
+    float old_increment = m_light_values[m_pos] / m_nr_of_light_values;
+    m_light_values[m_pos] = light_value_for_second;
+    float new_increment = m_light_values[m_pos] / m_nr_of_light_values;
+    m_average_light_value = m_average_light_value - old_increment + new_increment;
+  }
+
+  m_cumulator_seconds += new_light_value;
+  m_nr_values_for_second++;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

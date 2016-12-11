@@ -7,9 +7,8 @@
 // - automatic 'fox defence system' (rocket based / laser based)
 // - chicken disco feature (twice a year it's party time!!!)
 //----------------------------------------------------------------------------------------------------------------------
-
-#include <Bedtime.hpp>
 #include <Arduino.h>
+#include <Bedtime.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 // pins
@@ -71,7 +70,6 @@ void setup()
   pinMode(manualUpPin, INPUT);
   pinMode(manualDownPin, INPUT);
   pinMode(manualControlPin, INPUT);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -109,7 +107,7 @@ void loop()
   if (motor_is_running)
   {
     // turn off the motor when any of the E1/E2 switches are closed or when manual_control has been changed
-    if (  door_is_up || door_is_down || (new_manual_control != manual_control))
+    if (door_is_up || door_is_down || (new_manual_control != manual_control))
     {
       set_motor(0);
     }
@@ -127,22 +125,16 @@ void loop()
       set_motor(motor_speed, false);
     }
   }
-  else
+  else if (!motor_is_running) // do nothing as long as the motor is running
   {
-    // do nothing as long as the motor is running
-    if (!motor_is_running)
+    bedtime.add_light_value(analogRead(lightSensorPin));
+    if (!door_is_down && bedtime.time_to_sleep())
     {
-      bedtime.calculate_light_value(analogRead(lightSensorPin));
-
-      if (!door_is_down && bedtime.time_to_sleep())
-      {
-        set_motor(motor_speed, false);
-      }
-
-      if (!door_is_up && bedtime.time_to_get_up())
-      {
-        set_motor(motor_speed, true);
-      }
+      set_motor(motor_speed, false);
+    }
+    if (!door_is_up && bedtime.time_to_get_up())
+    {
+      set_motor(motor_speed, true);
     }
   }
 

@@ -1,21 +1,28 @@
 
 
+#include<Time.h>
+
 class Bedtime
 {
 public:
   Bedtime();
 
-   double get_average_light_value();
-  //----------------------------------------------------------------------------------------------------------------------
+  double get_average_light_value();
 
   // this function averages the incoming light over all data points.
-  void calculate_light_value(unsigned new_light_value);
-  // returns true when it is tume to get up.
-  bool   time_to_get_up();
-  // returns true when it is tume to sleep.
-  bool   time_to_sleep();
+  void add_light_value(unsigned new_light_value);
+
+  // returns true when it is time to get up.
+  bool time_to_get_up();
+
+  // returns true when it is time to sleep.
+  bool time_to_sleep();
+
+  // set the state of sleeping. This triggers awake/sleeping time counting
+  void set_sleep_state(bool sleeping);
 
 private:
+  int m_last_timestamp;
 
   // \todo for chicken safety count 'locked in' / 'free wildlife' times
   unsigned m_current_sleep_time = 0;
@@ -32,6 +39,8 @@ private:
   unsigned m_pos = 0;                           // current position in light value array
 
   const static unsigned m_nr_of_light_values = 300;                   // nr of data points for light sensor measurement
-  unsigned m_light_values[m_nr_of_light_values];  // light values stored for every second over 5 minutes
+  float m_light_values[m_nr_of_light_values];  // light values stored for every second over 5 minutes
+  float m_cumulator_seconds = 0.0;
+  unsigned m_nr_values_for_second = 0;
 
 };
