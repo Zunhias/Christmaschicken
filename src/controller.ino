@@ -1,4 +1,4 @@
-#include "Arduino.h"
+
 //----------------------------------------------------------------------------------------------------------------------
 // The amazing Chickenshack controller
 //
@@ -7,7 +7,7 @@
 // - automatic 'fox defence system' (rocket based / laser based)
 // - chicken disco feature (twice a year it's party time!!!)
 //----------------------------------------------------------------------------------------------------------------------
-
+#include <Arduino.h>
 //----------------------------------------------------------------------------------------------------------------------
 // pins
 
@@ -120,6 +120,32 @@ void loop()
   bool door_is_up   = digitalRead(E1Pin) == HIGH;
   bool door_is_down = digitalRead(E2Pin) == HIGH;
 
+  Serial.print("Door is up: ");
+  Serial.print(door_is_up);
+
+  Serial.print("; Door is down: ");
+  Serial.println(door_is_down);
+
+  Serial.print("Motor is running: ");
+  Serial.println(motor_is_running);
+
+  Serial.print("Light value: ");
+  Serial.print(average_light_value);
+  Serial.println();
+
+  Serial.print("Manual control: ");
+  Serial.println(manual_control);
+  Serial.print("Manual up: ");
+  Serial.print(manual_up);
+  Serial.print(" Manual down: ");
+  Serial.println(manual_down);
+
+  // turn off the motor when any of the E1/E2 switches are closed
+  if ( motor_is_running && (door_is_up || door_is_down) )
+  {
+    set_motor(0);
+  }
+
   if (manual_control)
   {
     if (manual_up && !door_is_up)
@@ -134,29 +160,10 @@ void loop()
   else
   {
 
-
-    // turn off the motor when any of the E1/E2 switches are closed
-    if ( motor_is_running && (door_is_up || door_is_down) )
-    {
-      set_motor(0);
-    }
-
-    Serial.print("Door is up: ");
-    Serial.print(door_is_up);
-
-    Serial.print("; Door is down: ");
-    Serial.println(door_is_down);
-
-    Serial.print("Motor is running: ");
-    Serial.println(motor_is_running);
-
     // do nothing as long as the motor is running
     if (!motor_is_running)
     {
       average_light_value = calculate_light_value();
-      Serial.print("Light value: ");
-      Serial.print(average_light_value);
-      Serial.println();
 
       if (door_is_up && time_to_sleep(average_light_value))
       {
@@ -170,5 +177,5 @@ void loop()
     }
   }
 
- delay(500); // wait a bit so the real world can change accordingly
+ delay(50); // wait a bit so the real world can change accordingly
 }
