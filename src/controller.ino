@@ -165,12 +165,12 @@ void loop()
     {
       average_light_value = calculate_light_value();
 
-      if (door_is_up && time_to_sleep(average_light_value))
+      if (!door_is_down && time_to_sleep(average_light_value))
       {
         set_motor(motor_speed, false);
       }
 
-      if (door_is_down && time_to_get_up(average_light_value))
+      if (!door_is_up && time_to_get_up(average_light_value))
       {
         set_motor(motor_speed, true);
       }
