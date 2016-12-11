@@ -4,7 +4,6 @@
 - Bring the Matthias git by.
 
 ## Software
-- add manual up/down buttons and switch for automatic and manual operation
 - set realistic values for motor speed
 - set realistic values day/night signal limits
 

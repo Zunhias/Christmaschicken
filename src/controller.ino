@@ -7,7 +7,10 @@
 // - automatic 'fox defence system' (rocket based / laser based)
 // - chicken disco feature (twice a year it's party time!!!)
 //----------------------------------------------------------------------------------------------------------------------
+
+#include <Bedtime.hpp>
 #include <Arduino.h>
+
 //----------------------------------------------------------------------------------------------------------------------
 // pins
 
@@ -26,38 +29,17 @@ const int lightSensorPin = A0; // id of the analog light sensor pin; for now don
 
 //----------------------------------------------------------------------------------------------------------------------
 // constants
-// \todo separate daytime/nighttime thresholds for precise opening/closing times
-//       delay closing time 30 minutes after light is off.
-const unsigned sun_is_up_threshold = 40;                   // threshold for light sensor on which we consider the sun to be shining
-const unsigned long max_sleep_time = 1000L * 60 * 60 * 10; // 1000 millisecs * 60 sec * 60 min * 10h
-const unsigned long max_awake_time = 1000L * 60 * 60 * 18; // 1000 millisecs * 60 sec * 60 min * 18h
+
 const unsigned motor_speed = 1000;                         // guillotine style speed!!! ToDo: adjust motor Speed
-const unsigned nr_of_light_values = 300;                   // nr of data points for light sensor measurement
 
 //----------------------------------------------------------------------------------------------------------------------
 // variables
-double average_light_value = 0.0;
-unsigned pos = 0;                           // current position in light value array
-unsigned light_values[nr_of_light_values];  // light values stored for every second over 5 minutes
+
 bool motor_is_running = false;
 bool manual_control = false;
-// \todo for chicken safety count 'locked in' / 'free wildlife' times
-unsigned current_sleep_time = 0;
-unsigned current_awake_time = 0;
 
-//----------------------------------------------------------------------------------------------------------------------
+Bedtime bedtime = Bedtime();
 
-bool time_to_get_up( unsigned light_value, unsigned current_sleep_time = 0)
-{
-  return (light_value > sun_is_up_threshold) || (current_sleep_time > max_sleep_time);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-bool time_to_sleep(unsigned light_value, unsigned current_awake_time = 0)
-{
-  return (light_value <= sun_is_up_threshold) || (current_awake_time > max_awake_time);
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -90,23 +72,6 @@ void setup()
   pinMode(manualDownPin, INPUT);
   pinMode(manualControlPin, INPUT);
 
-  //initialize light value array to complete darkness
-  for (unsigned i = 0; i < nr_of_light_values; ++i)
-  {
-    light_values[i] = 0;
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// this function averages the incoming light over all data points.
-double calculate_light_value()
-{
-  pos = (pos+1) % nr_of_light_values;
-  double old_increment = (double)light_values[pos] / (double)nr_of_light_values;
-  light_values[pos] = analogRead(lightSensorPin);
-  double new_increment = (double)light_values[pos] / (double)nr_of_light_values;
-  return average_light_value - old_increment + new_increment;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -131,7 +96,7 @@ void loop()
   Serial.println(motor_is_running);
 
   Serial.print("Light value: ");
-  Serial.print(average_light_value);
+  Serial.print(bedtime.get_average_light_value());
   Serial.println();
 
   Serial.print("Manual control: ");
@@ -164,18 +129,17 @@ void loop()
   }
   else
   {
-
     // do nothing as long as the motor is running
     if (!motor_is_running)
     {
-      average_light_value = calculate_light_value();
+      bedtime.calculate_light_value(analogRead(lightSensorPin));
 
-      if (!door_is_down && time_to_sleep(average_light_value))
+      if (!door_is_down && bedtime.time_to_sleep())
       {
         set_motor(motor_speed, false);
       }
 
-      if (!door_is_up && time_to_get_up(average_light_value))
+      if (!door_is_up && bedtime.time_to_get_up())
       {
         set_motor(motor_speed, true);
       }
