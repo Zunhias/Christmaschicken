@@ -1,12 +1,13 @@
 #include "Bedtime.h"
 
+
 namespace
 {
   const unsigned sun_is_up_threshold = 40;      // threshold for light sensor on which we consider the sun to be shining
   const unsigned sun_is_down_threshold = 40;    // threshold for light sensor on which we consider the sun to be gone
 
-  const unsigned long max_sleep_time = 10 * 3600UL; // 10h * 60 min * 60sec
-  const unsigned long max_awake_time = 18 * 3600UL; // 18h * 60 min * 60sec
+  const unsigned long max_sleep_time = 30; // change from seconds to this value after testing -> 10 * 3600UL; // 10h * 60 min * 60sec
+  const unsigned long max_awake_time = 30; // change from seconds to this value after testing -> 18 * 3600UL; // 18h * 60 min * 60sec
   const unsigned int sun_down_delay_time = 10; //\todo change from 10sec to 30 min when testing is done
 }
 
