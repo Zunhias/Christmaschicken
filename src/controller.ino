@@ -94,7 +94,7 @@ void loop()
   Serial.println(motor_is_running);
 
   Serial.print("Light value: ");
-  Serial.print(bedtime.get_average_light_value());
+  Serial.print(bedtime.average_light_value());
   Serial.println();
 
   Serial.print("Manual control: ");
@@ -116,13 +116,13 @@ void loop()
 
   if (manual_control)
   {
-    if (manual_up && !door_is_up)
-    {
-      set_motor(motor_speed, true);
-    }
-    if (manual_down && !door_is_down)
+    if (!door_is_down && manual_down )
     {
       set_motor(motor_speed, false);
+    }
+    if (!door_is_up && manual_up)
+    {
+      set_motor(motor_speed, true);
     }
   }
   else if (!motor_is_running) // do nothing as long as the motor is running
