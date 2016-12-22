@@ -113,6 +113,7 @@ void loop()
   }
   manual_control = new_manual_control;
 
+  bedtime.add_light_value(analogRead(lightSensorPin)); // only here for calibration
   if (manual_control)
   {
     if (!door_is_down && manual_down )
@@ -126,7 +127,7 @@ void loop()
   }
   else if (!motor_is_running) // do nothing as long as the motor is running
   {
-    bedtime.add_light_value(analogRead(lightSensorPin));
+    //bedtime.add_light_value(analogRead(lightSensorPin)); // uncomment for actual usage of christmaschicken
     if (!door_is_down && bedtime.time_to_sleep())
     {
       set_motor(motor_speed, false);
@@ -137,5 +138,5 @@ void loop()
     }
   }
 
- delay(50); // wait a bit so the real world can change accordingly
+ delay(500); // wait a bit so the real world can change accordingly
 }

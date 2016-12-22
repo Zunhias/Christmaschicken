@@ -3,11 +3,11 @@
 
 namespace
 {
-  const unsigned sun_is_up_threshold = 40;      // threshold for light sensor on which we consider the sun to be shining
-  const unsigned sun_is_down_threshold = 40;    // threshold for light sensor on which we consider the sun to be gone
+  const unsigned sun_is_up_threshold = 200;      // threshold for light sensor on which we consider the sun to be shining
+  const unsigned sun_is_down_threshold = 150;    // threshold for light sensor on which we consider the sun to be gone
 
-  const unsigned long max_sleep_time = 30; // change from seconds to this value after testing -> 10 * 3600UL; // 10h * 60 min * 60sec
-  const unsigned long max_awake_time = 30; // change from seconds to this value after testing -> 18 * 3600UL; // 18h * 60 min * 60sec
+  const unsigned long max_sleep_time = 60; // change from seconds to this value after testing -> 10 * 3600UL; // 10h * 60 min * 60sec
+  const unsigned long max_awake_time = 60; // change from seconds to this value after testing -> 18 * 3600UL; // 18h * 60 min * 60sec
   const unsigned int sun_down_delay_time = 10; //\todo change from 10sec to 30 min when testing is done
 }
 
@@ -64,9 +64,11 @@ void Bedtime::update_sleep_wake_state( float light_value )
   m_time_since_sun_down = sun_is_down ? (m_time_since_sun_down + time_difference) : 0;
   m_time_since_sun_up   = sun_is_up   ? (m_time_since_sun_up + time_difference) : 0;
 
-  m_time_to_get_up = sun_is_up || (m_time_since_sun_down > max_sleep_time);
-  m_time_to_sleep = ( sun_is_down && m_time_since_sun_down > sun_down_delay_time )
-                 || ( m_time_since_sun_up > max_awake_time );
+  m_time_to_get_up = sun_is_up;
+  m_time_to_sleep = (sun_is_down && m_time_since_sun_down > sun_down_delay_time);
+  //m_time_to_get_up = sun_is_up || (m_time_since_sun_down > max_sleep_time);
+  //m_time_to_sleep = ( sun_is_down && m_time_since_sun_down > sun_down_delay_time )
+  //               || ( m_time_since_sun_up > max_awake_time );
 }
 
 
