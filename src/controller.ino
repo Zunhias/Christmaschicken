@@ -29,7 +29,7 @@ const int lightSensorPin = A0; // id of the analog light sensor pin; for now don
 //----------------------------------------------------------------------------------------------------------------------
 // constants
 
-const unsigned motor_speed = 1000;                         // guillotine style speed!!! ToDo: adjust motor Speed
+const unsigned motor_speed = 500;                         // guillotine style speed!!! ToDo: adjust motor Speed
 
 //----------------------------------------------------------------------------------------------------------------------
 // variables
@@ -88,20 +88,19 @@ void loop()
   Serial.print(door_is_up);
 
   Serial.print("; Door is down: ");
-  Serial.println(door_is_down);
+  Serial.print(door_is_down);
 
-  Serial.print("Motor is running: ");
-  Serial.println(motor_is_running);
+  Serial.print("; Motor is running: ");
+  Serial.print(motor_is_running);
 
-  Serial.print("Light value: ");
+  Serial.print("; Light value: ");
   Serial.print(bedtime.average_light_value());
-  Serial.println();
 
-  Serial.print("Manual control: ");
-  Serial.println(manual_control);
-  Serial.print("Manual up: ");
+  Serial.print("; Manual control: ");
+  Serial.print(manual_control);
+  Serial.print("; Manual up: ");
   Serial.print(manual_up);
-  Serial.print(" Manual down: ");
+  Serial.print("; Manual down: ");
   Serial.println(manual_down);
 
   if (motor_is_running)

@@ -31,7 +31,7 @@ private:
   float m_average_light_value = 0.0;
   unsigned m_pos = 0;                           // current position in light value array
 
-  const static unsigned m_nr_of_light_values = 300;                   // nr of data points for light sensor measurement
+  const static unsigned m_nr_of_light_values = 30;                   // nr of data points for light sensor measurement
   float m_light_values[m_nr_of_light_values];  // light values stored for every second over 5 minutes
   float m_cumulator_seconds = 0.0;
   unsigned m_nr_values_for_second = 0;
